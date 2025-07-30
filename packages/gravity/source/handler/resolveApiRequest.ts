@@ -33,6 +33,11 @@ export type ResolveApiRequestOptions<Context, Request, Response> = {
 	headers: IncomingHttpHeaders;
 	rawBody: Uint8Array | null | undefined;
 	allowedOrigins: string[] | undefined;
+	allowedHeaders: string[] | undefined;
+	allowedMethods: string[] | undefined;
+	exposedHeaders: string[] | undefined;
+	maxAge: number | undefined;
+	allowedCredentials: boolean | undefined;
 	authorize: Authorize<Context> | undefined;
 	onRequestReceive: OnRequestReceive<Context, Request> | undefined;
 	setContentType?: SetContentType<Context, Request> | undefined;
@@ -71,6 +76,22 @@ export async function resolveApiRequest<Context, Request, Response>(
 	headers["access-control-allow-headers"] = "*";
 	if (allowedOrigin != null) {
 		headers["access-control-allow-origin"] = allowedOrigin;
+	}
+	headers["access-control-allow-headers"] =
+		options.allowedHeaders?.join(", ") ?? "*";
+
+	if (options.allowedMethods) {
+		headers["access-control-allow-methods"] = options.allowedMethods.join(", ");
+	}
+	if (options.exposedHeaders) {
+		headers["access-control-expose-headers"] =
+			options.exposedHeaders.join(", ");
+	}
+	if (options.maxAge) {
+		headers["access-control-max-age"] = String(options.maxAge);
+	}
+	if (options.allowedCredentials) {
+		headers["access-control-allow-credentials"] = "true";
 	}
 
 	// if case of an "OPTIONS" request, we just return the headers

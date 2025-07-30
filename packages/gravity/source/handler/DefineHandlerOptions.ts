@@ -16,6 +16,11 @@ export type DefineHandlerOptions<
 	onResponseSend?: OnResponseSend<Context, Response>;
 	authorize?: Authorize<Context>;
 	allowedOrigins?: string[];
+	allowedHeaders?: string[];
+	allowedMethods?: string[];
+	exposedHeaders?: string[];
+	maxAge?: number;
+	allowedCredentials?: boolean;
 } & (Context extends undefined
 	? { onRequestReceive?: OnRequestReceive<Context, Request> }
 	: {
