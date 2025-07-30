@@ -11,8 +11,11 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    container: alpine:latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
     steps:
       - uses: actions/checkout@v4
       
@@ -33,7 +36,7 @@ jobs:
 
       # build & test
       - name: Build
-        run: npm run build # TODO: Change "build" to "test" when tests are ready
+        run: pnpm run build # TODO: Change "build" to "test" when tests are ready
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
@@ -42,6 +45,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v4
+      
+      # Install Pnpm & Node
+      - name: Install Pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Install dependencies with pnpm
+      - name: Install Dependencies
+        run: pnpm install
+
       # setup git config (for auto-version bumping)
       - name: Setup git config
         run: |
@@ -50,6 +70,6 @@ jobs:
 
       # deploy to npm
       - name: Deploy
-        run: npm run deploy
+        run: pnpm run deploy
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
