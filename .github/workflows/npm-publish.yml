@@ -41,7 +41,7 @@ jobs:
   publish:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    depends-on: build
+    needs: build
     steps:
       # setup git config (for auto-version bumping)
       - name: Setup git config
