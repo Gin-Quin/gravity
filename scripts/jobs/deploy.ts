@@ -28,7 +28,14 @@ export async function deploy() {
 			packages.map(async (packageName) => {
 				const cwd = path.resolve(`${packageName}/package`);
 
-				await execute(`npm publish --access public`, { cwd });
+				console.log("NODE_AUTH_TOKEN", process.env.NODE_AUTH_TOKEN);
+
+				await execute(`npm publish --access public`, {
+					cwd,
+					env: {
+						...process.env,
+					},
+				});
 				print`[blue: [bold:${packageName}] • Publication successful 🤗]`;
 			}),
 		);
