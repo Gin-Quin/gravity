@@ -1,6 +1,6 @@
 {
 	"name": "@digitak/create-gravity",
-	"version": "0.9.66",
+	"version": "0.9.67",
 	"description": "Next-generation backend framework with isomorphic capacities",
 	"repository": "https://github.com/digital-loukoum/gravity.git",
 	"author": "Gin Quin",
