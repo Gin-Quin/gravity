@@ -28,8 +28,6 @@ export async function deploy() {
 			packages.map(async (packageName) => {
 				const cwd = path.resolve(`${packageName}/package`);
 
-				console.log("NODE_AUTH_TOKEN", process.env.NODE_AUTH_TOKEN);
-
 				await execute(`npm publish --access public`, {
 					cwd,
 					env: {
