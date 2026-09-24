@@ -85,17 +85,21 @@ export function defineStore<Store>(
 					}
 				}
 
-				if (window.navigator.onLine == false) return;
-
-				const response = await resolveApiCall(
-					{ fetcher: customFetcher },
-					service,
-					operation,
-					properties,
-					body,
-				);
-
-				if ((window.navigator.onLine as boolean) == false) return;
+				// navigator.onLine is false without internet even when the API is on localhost,
+				// so rely on fetch's TypeError (server unreachable) to keep persisted data instead
+				let response: ApiResponse<unknown>;
+				try {
+					response = await resolveApiCall(
+						{ fetcher: customFetcher },
+						service,
+						operation,
+						properties,
+						body,
+					);
+				} catch (error) {
+					if (error instanceof TypeError) return;
+					throw error;
+				}
 
 				if (!response.error && persist) {
 					await gravityDB.set(key, response.data);
