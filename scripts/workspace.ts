@@ -5,6 +5,7 @@ export const root = resolve(import.meta.dir, "..");
 export type Manifest = {
 	name: string;
 	version: string;
+	repository?: string;
 	private?: boolean;
 	main?: string;
 	types?: string;

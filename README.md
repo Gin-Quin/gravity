@@ -34,13 +34,12 @@ bun run deploy --dry-run
 ```
 
 The dry run uses `bun pm pack --dry-run` to validate packages locally. It does
-not require registry login or a publish token, including in CI.
+not require registry credentials.
 
-To publish the current version, set `GRAVITY_REGISTRY_TOKEN` to a valid granular
-registry token with write access to the `@digitak` packages. The token is read from
-the environment by `bunfig.toml`; never commit its value. Configure its 2FA settings
-as required by your registry account and complete any browser or OTP prompts Bun
-presents.
+Publishing is manual from your machine. Sign in to your npm account locally;
+Bun reads credentials from your user-level `.npmrc` or `NPM_CONFIG_TOKEN`. Do
+not commit credentials. Run these commands from the repository root and complete
+any browser or OTP prompts Bun presents:
 
 ```sh
 bun pm whoami
@@ -50,17 +49,11 @@ bun run deploy
 The release script checks, builds, validates, and publishes the ten compiled
 packages in dependency order. It verifies each publication against the registry.
 If a release fails partway through, fix the error and rerun `bun run deploy`:
-versions already published are skipped.
+versions already published are skipped. Expired local credentials require signing
+in again, but there is no per-package trusted publisher setup.
 
 For a subsequent patch release, use `bun run deploy --bump`. This updates the root
 and all workspace versions and refreshes `bun.lock`. Retry a partial release
 without `--bump` to keep the same version. Review and commit release changes
-(for example, `📌 Version 0.9.70`), then push them yourself.
-
-CI installs from `bun.lock`, runs `bun check` and the tests, and validates every
-release package with a dry run on pull requests. Pushes to `main` and manual
-workflow runs on `main` publish the current version after the checks pass. Set
-the repository's `NPM_TOKEN` Actions secret to a valid granular npm token with
-write access to all ten `@digitak` packages and 2FA bypass for CI. The workflow
-passes this secret to `GRAVITY_REGISTRY_TOKEN` only for the publish step. Already
-published versions are skipped, so a failed release can be retried from Actions.
+(for example, `📌 Version 0.9.70`), then push them yourself. GitHub Actions does
+not run checks or publish packages; run the local checks before each release.

@@ -76,8 +76,7 @@ export async function deploy(args: string[]) {
   --bump      Increment every workspace's patch version, then publish.
 
 After a partial release, retry without --bump. Already published versions are
-skipped. Configure registry credentials in bunfig.toml. Git commits and pushes
-are managed separately.`);
+skipped. Use local registry credentials. Git commits and pushes are managed separately.`);
 		return;
 	}
 	const dryRun = args.includes("--dry-run");
@@ -88,7 +87,7 @@ are managed separately.`);
 	for (const { manifest } of packages) if (manifest.version !== version) throw new Error(`${manifest.name} must have version ${version}.`);
 	if (!dryRun) {
 		try { runBun(["pm", "whoami"]); }
-		catch { throw new Error("Registry authentication failed. Set GRAVITY_REGISTRY_TOKEN to a valid publish token, then retry bun run deploy."); }
+		catch { throw new Error("Registry authentication failed. Configure local npm credentials, then retry bun run deploy."); }
 	}
 	if (args.includes("--bump")) {
 		if (!/^\d+\.\d+\.\d+$/.test(version)) throw new Error(`Cannot patch-bump version ${version}.`);

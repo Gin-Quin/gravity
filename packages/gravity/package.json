@@ -2,7 +2,7 @@
 	"name": "@digitak/gravity",
 	"version": "0.9.69",
 	"description": "Next-generation backend framework with isomorphic capacities",
-	"repository": "https://github.com/digital-loukoum/gravity.git",
+	"repository": "https://github.com/Gin-Quin/gravity",
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",

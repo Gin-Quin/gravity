@@ -1,5 +1,5 @@
 [install]
-registry = { url = "https://registry.npmjs.org", token = "$GRAVITY_REGISTRY_TOKEN" }
+registry = "https://registry.npmjs.org"
 
 [run]
 bun = true
