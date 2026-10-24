@@ -58,4 +58,9 @@ without `--bump` to keep the same version. Review and commit release changes
 (for example, `📌 Version 0.9.70`), then push them yourself.
 
 CI installs from `bun.lock`, runs `bun check` and the tests, and validates every
-release package with a dry run. Publishing is performed manually.
+release package with a dry run on pull requests. Pushes to `main` and manual
+workflow runs on `main` publish the current version after the checks pass. Set
+the repository's `NPM_TOKEN` Actions secret to a valid granular npm token with
+write access to all ten `@digitak` packages and 2FA bypass for CI. The workflow
+passes this secret to `GRAVITY_REGISTRY_TOKEN` only for the publish step. Already
+published versions are skipped, so a failed release can be retried from Actions.
