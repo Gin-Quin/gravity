@@ -86,6 +86,17 @@ test("reports a successful command without a visible published version as a fail
 	})).rejects.toThrow("Could not verify");
 });
 
+test("waits for registry indexing after a successful publish", async () => {
+	let checks = 0;
+	await publishPackages([pkg("gravity")], version, {
+		isPublished: async () => ++checks >= 3,
+		publish: () => {},
+		verificationAttempts: 3,
+		verificationDelayMs: 0,
+	});
+	expect(checks).toBe(3);
+});
+
 test("release validation packs locally without credentials or registry requests", async () => {
 	const directory = mkdtempSync(resolve(tmpdir(), "gravity-pack-test-"));
 	let requests = 0;

@@ -27,11 +27,15 @@ export async function isPublished(name: string, version: string, request: (url: 
 type ReleaseOperations = {
 	isPublished: typeof isPublished;
 	publish: (directory: string) => void;
+	verificationAttempts?: number;
+	verificationDelayMs?: number;
 };
 
 export async function publishPackages(packages: WorkspacePackage[], version: string, operations: ReleaseOperations = {
 	isPublished,
 	publish: (directory) => { runBun(["publish", "--access", "public", `--registry=${registry}`], directory); },
+	verificationAttempts: 60,
+	verificationDelayMs: 5000,
 }) {
 	const pending: WorkspacePackage[] = [];
 	// Finish every registry check before making the first write.
@@ -42,7 +46,12 @@ export async function publishPackages(packages: WorkspacePackage[], version: str
 	for (const { manifest, directory } of pending) {
 		console.log(`\nPublishing ${manifest.name}@${version}...`);
 		operations.publish(directory);
-		if (!await operations.isPublished(manifest.name, version)) throw new Error(`Could not verify ${manifest.name}@${version} on the registry.`);
+		let verified = false;
+		for (let attempt = 0; attempt < (operations.verificationAttempts ?? 1); attempt++) {
+			if (await operations.isPublished(manifest.name, version)) { verified = true; break; }
+			if (attempt + 1 < (operations.verificationAttempts ?? 1)) await Bun.sleep(operations.verificationDelayMs ?? 0);
+		}
+		if (!verified) throw new Error(`Could not verify ${manifest.name}@${version} on the registry.`);
 	}
 }
 
