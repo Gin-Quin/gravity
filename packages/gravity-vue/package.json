@@ -4,32 +4,35 @@
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",
-	"main": "./index.js",
+	"main": "./source/index.ts",
 	"exports": {
-		".": "./index.js",
-		"./*": "./*.js"
+		".": {
+			"types": "./source/index.ts",
+			"default": "./source/index.ts"
+		},
+		"./*": {
+			"types": "./source/*.ts",
+			"default": "./source/*.ts"
+		}
 	},
 	"scripts": {
-		"build": "esrun scripts/build",
-		"check": "tsc --noEmit",
-		"check:dev": "tsc --noEmit --watch",
-		"test": "esrun test",
-		"deploy": "pnpm build && pnpm test && pnpm publish"
+		"build": "bun ../../scripts/build.ts gravity-vue"
 	},
 	"peerDependencies": {
-		"@digitak/gravity": "link:../gravity/package",
+		"@digitak/gravity": "workspace:*",
 		"vue": "^3.2.25"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^3.2.11",
-		"@digitak/gravity": "link:../gravity/package",
-		"@types/fs-extra": "^9.0.13",
-		"@types/node": "latest",
-		"@vitejs/plugin-vue": "^2.3.1",
-		"fs-extra": "^10.1.0",
-		"typescript": "^4.7.4",
-		"vite": "^2.9.5",
-		"vue": "^3.2.25",
-		"vue-tsc": "^0.34.7"
+		"@digitak/gravity": "workspace:*",
+		"@types/fs-extra": "9.0.13",
+		"@vitejs/plugin-vue": "2.3.3",
+		"fs-extra": "10.1.0",
+		"vite": "2.9.10",
+		"vue": "3.2.37",
+		"vue-tsc": "0.34.17"
+	},
+	"types": "./source/index.ts",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

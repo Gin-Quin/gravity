@@ -1,8 +1,11 @@
 {
-  "scripts": {
-    "dev": "../node_modules/.bin/gravity dev --use '../node_modules/.bin/next dev'",
-    "build": "../node_modules/.bin/gravity build --use '../node_modules/.bin/next build'",
-    "start": "../node_modules/.bin/next start",
-    "lint": "../node_modules/.bin/next lint"
-  }
+	"scripts": {
+		"dev": "bunx --bun gravity dev --use 'bunx --bun next dev'",
+		"build": "bun check && bunx --bun gravity build --use 'bunx --bun next build'",
+		"start": "bunx --bun next start",
+		"lint": "bunx --bun next lint"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
+	}
 }

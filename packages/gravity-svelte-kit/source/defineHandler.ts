@@ -40,7 +40,7 @@ export const defineHandler = <Services extends ServicesRecord<any>>(
 			onRequestReceive: options.onRequestReceive,
 			onResponseSend: options.onResponseSend,
 			createResponse: ({ body, headers, status }) =>
-				new Response(body, {
+				new Response(typeof body === "string" ? body : new Uint8Array(body), {
 					headers,
 					status,
 				}),

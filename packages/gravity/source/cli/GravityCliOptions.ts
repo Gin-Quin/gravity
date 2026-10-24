@@ -1,4 +1,4 @@
-import type { BuildOptions } from "esbuild";
+import type { BuildConfig } from "bun";
 
 export type GravityCliOptions = {
 	/**
@@ -43,24 +43,8 @@ export type GravityCliOptions = {
 	 */
 	schemaless?: boolean;
 
-	/**
-	 * Optional options to pass to esbuild when building the server
-	 */
-	esbuildOptions?: Pick<
-		BuildOptions,
-		| "minify"
-		| "format"
-		| "sourcemap"
-		| "platform"
-		| "target"
-		| "jsx"
-		| "jsxFactory"
-		| "jsxFragment"
-		| "keepNames"
-		| "legalComments"
-		| "treeShaking"
-		| "tsconfig"
-	>;
+	/** Options passed to Bun's native bundler. */
+	bunBuildOptions?: Pick<BuildConfig, "minify" | "format" | "sourcemap" | "target" | "define" | "external">;
 
 	/**
 	 * Also bundle third party libraries when building.

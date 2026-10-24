@@ -1,7 +1,10 @@
 {
-  "scripts": {
-    "dev": "../node_modules/.bin/vite",
-    "build": "../node_modules/.bin/vue-tsc --noEmit && ../node_modules/.bin/vite build",
-    "preview": "../node_modules/.bin/vite preview"
-  }
+	"scripts": {
+		"dev": "bunx --bun vite",
+		"build": "bun check && bunx --bun vue-tsc --noEmit && bunx --bun vite build",
+		"preview": "bunx --bun vite preview"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
+	}
 }

@@ -1,8 +1,6 @@
 import { searchDependencies } from "../utilities/searchDependencies.js";
 import { select } from "../utilities/select.js";
 import { ask } from "../utilities/ask.js";
-import { findPackageManager } from "../utilities/findPackageManager.js";
-import { execSync } from "child_process";
 import type { CompatibleFramework } from "../utilities/compatibleFrameworks.js";
 import { compatibleFrameworks } from "../utilities/compatibleFrameworks.js";
 import { copyTemplates } from "../utilities/copyTemplates.js";
@@ -38,20 +36,12 @@ export async function create(
 	}
 
 	/**
-	 * 2. Find which package manager to use
-	 */
-	const packageManager = await findPackageManager();
-	if (!packageManager) return;
-
-	/**
 	 * 3. Ensure package.json exists
 	 */
 	if (!fs.existsSync(join(destination, "package.json"))) {
 		stage("Creating package.json");
-		execSync(`${packageManager} init --yes`, {
-			cwd: destination,
-			stdio: "ignore",
-		});
+		const initialized = Bun.spawnSync([process.execPath, "init", "--yes"], { cwd: destination });
+		if (initialized.exitCode !== 0) throw new Error(`Project initialization failed: ${initialized.stderr.toString()}`);
 		done("package.json created");
 	}
 
@@ -122,26 +112,15 @@ export async function create(
 	 * 5. Install packages
 	 */
 	stage("Installing packages (it can take some time)");
-	const installCommand = {
-		npm: "install",
-		yarn: "add",
-		pnpm: "add",
-	};
-	const packagesToInstall = ["@digitak/gravity", ...frameworks];
+
+	const packagesToInstall = ["@digitak/gravity", ...[...frameworks].filter((framework) => framework !== "gravity").map((framework) => `@digitak/gravity-${framework}`)];
 
 	packagesToInstall.forEach((packageName) =>
 		stage(`Installing ${chalk.underline(packageName)}`),
 	);
 
-	execSync(
-		`${packageManager} ${
-			installCommand[packageManager]
-		} ${packagesToInstall.join(" ")}`,
-		{
-			cwd: destination,
-			stdio: "ignore",
-		},
-	);
+	const installed = Bun.spawnSync([process.execPath, "add", ...packagesToInstall], { cwd: destination });
+	if (installed.exitCode !== 0) throw new Error(`Dependency installation failed: ${installed.stderr.toString()}`);
 
 	packagesToInstall.forEach((packageName) =>
 		done(`${chalk.underline(packageName)} installed`),
@@ -177,10 +156,10 @@ export async function create(
 	}
 
 	/**
-	 * 8. Patching npm scripts
+	 * 8. Patching package scripts
 	 */
 	if (isServerSide) {
-		stage("Patching npm scripts");
+		stage("Patching package scripts");
 		const scripts = findPackageScripts();
 		scripts.dev =
 			scripts.dev && !scripts.dev.startsWith("gravity ")
@@ -196,7 +175,7 @@ export async function create(
 		scripts["generate:schema"] ||= `gravity generate schema`;
 
 		updatePackageInfos({ scripts });
-		done("npm scripts patched");
+		done("package scripts patched");
 	}
 
 	console.log("\n✨ Gravity is ready to use\n");

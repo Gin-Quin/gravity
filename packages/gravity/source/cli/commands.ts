@@ -5,9 +5,9 @@ import { build } from "./jobs/build.js";
 import { generateSchema } from "./jobs/generateSchema.js";
 import { preview } from "./jobs/preview.js";
 import {
-	esBuildOptionsProperties,
+	bunBuildOptionsProperties,
 	options,
-	useEsBuildOptions,
+	useBunBuildOptions,
 } from "./options.js";
 import { version } from "../version.js";
 
@@ -63,7 +63,7 @@ export const useDevelop = (program: Sade, command = "dev") => {
 };
 
 export const useBuild = (program: Sade, command = "build") => {
-	return useEsBuildOptions(
+	return useBunBuildOptions(
 		useCommand(program, command).describe(
 			"Build gravity server for production",
 		),
@@ -77,13 +77,13 @@ export const useBuild = (program: Sade, command = "build") => {
 		.option(...options.use)
 		.option(...options.verbose)
 		.action((options) => {
-			const esbuildOptions: any = {};
+			const bunBuildOptions: any = {};
 
-			for (let { option, key, getValue } of esBuildOptionsProperties) {
+			for (let { option, key, getValue } of bunBuildOptionsProperties) {
 				option = option.slice(2);
 				if (options[option] !== undefined) {
 					const value = options[option];
-					esbuildOptions[key] = getValue ? getValue(value) : value;
+					bunBuildOptions[key] = getValue ? getValue(value) : value;
 				}
 			}
 
@@ -96,7 +96,7 @@ export const useBuild = (program: Sade, command = "build") => {
 				verbose: parseBoolean(options["logs"], true),
 				bundleDependencies: parseBoolean(options["bundle-dependencies"]),
 				use: options["use"] || "",
-				esbuildOptions,
+				bunBuildOptions,
 			});
 		});
 };

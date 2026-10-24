@@ -1,5 +1,8 @@
 ## 0.9.63
 
+This archive describes earlier releases. Current development and builds use Bun;
+see the project README for current commands.
+
 - make `schema` optional
 
 ## 0.9.62
@@ -91,7 +94,7 @@
 
 ## 0.9.37
 
-- update `esrun` to version 3.2.11 with important fixes for windows and the watcher.
+- update the script runner to version 3.2.11 with important fixes for windows and the watcher.
 - in Node middleware, execute the user callback `onResponseSend` before the response is actually sent. This allows to set special headers before it is definitely sent.
 
 ## 0.9.36
@@ -100,22 +103,22 @@
 
 ## 0.9.35
 
-- apply new `esrun` dependency strategy to `gravity build`, which add support for typescript aliases starting with a letter when running `gravity build`.
+- apply new the script runner dependency strategy to `gravity build`, which add support for typescript aliases starting with a letter when running `gravity build`.
 
 ## 0.9.34
 
-- update `esrun` to version 3.2.8 that add support for typescript aliases starting with a letter when running `gravity dev`.
+- update the script runner to version 3.2.8 that add support for typescript aliases starting with a letter when running `gravity dev`.
 
 ## 0.9.33
 
 - `gravity build` now works the same as `gravity dev`: dependencies are not bundled by default. It is still possible to bundle the dependencies with the `--bundle-dependencies` option
 - add the option `--no-logs` to the `gravity build` command
-- update esbuild version (now 0.14.47)
+- update bundler version (now 0.14.47)
 - add documentation for build strategies
 
 ## 0.9.32
 
-- fix `gravity build` bug caused by the processing of esbuild options
+- fix `gravity build` bug caused by the processing of bundler options
 
 ## 0.9.31
 
@@ -131,7 +134,7 @@ Thanks to **@omar-dulaimi** for the fix 🎉
 
 ## 0.9.29
 
-- update to @digitak/esrun@3.2.5 which fix watching
+- update to script runner version 3.2.5 which fix watching
 - update to typezer@0.9.26 that brings automatic `tsconfig.json` detection and enable to use path aliases (returned `any` on a type issued from a path alias)
 
 ## 0.9.28

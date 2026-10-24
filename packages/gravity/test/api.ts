@@ -1,4 +1,3 @@
-import "./fetch.polyfill.js";
 import { defineApi } from "../source/api/defineApi.js";
 import type { services } from "./server/services";
 

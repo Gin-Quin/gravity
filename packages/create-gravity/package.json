@@ -6,17 +6,19 @@
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",
-	"bin": "./bin.js",
+	"bin": "./source/bin.ts",
 	"scripts": {
-		"test": "esrun source/bin",
-		"build": "esrun scripts/build"
+		"test": "bun source/bin.ts",
+		"build": "bun ../../scripts/build.ts create-gravity"
 	},
 	"dependencies": {
-		"@digitak/gravity": "link:../gravity/package",
-		"sade": "^1.8.1"
+		"@digitak/gravity": "workspace:*",
+		"sade": "1.8.1"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^3.2.11",
-		"fs-extra": "^10.0.0"
+		"fs-extra": "10.1.0"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

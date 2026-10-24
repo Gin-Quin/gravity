@@ -1,33 +1,57 @@
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
-import { api } from "./api";
-import start from "fartest";
+import { afterAll, expect, spyOn, test } from "bun:test";
+import { defineHandler } from "../source/bun";
+import { defineApi } from "../source/api/defineApi";
+import { ServerError } from "../source";
+import { services } from "./server/services";
+import schema from "./server/schema.json";
+import { isPrivate } from "./server/guards/Private";
+import { logger } from "../source/logs/logger";
 
-let server: ChildProcessWithoutNullStreams | null = spawn(`npm`, [
-	"run",
-	"test:server",
-]);
-
-const sleep = (value: number) =>
-	new Promise((resolve) => setTimeout(resolve, value));
-
-const stopServer = () => {
-	server?.kill();
-	server = null;
-};
-
-const serverIsReady = new Promise((resolve) => {
-	server?.stdout.on("data", (data) => {
-		// console.log(data.toString());
-		if (data.toString().includes("Gravity server is running")) {
-			resolve(undefined);
+function withExpectedErrorLogs(run: () => Promise<void>) {
+	return async () => {
+		const isExpected = (name: string, message: string) =>
+			(name === "GravityError" && message === "Bad parameters") ||
+			(name === "ServerError" && message === "Forbidden access");
+		const consoleSpies = (["warn", "error"] as const).map((method) => {
+			const original = console[method].bind(console);
+			return spyOn(console, method).mockImplementation((...args: unknown[]) => {
+				const [error] = args;
+				if (error instanceof Error && isExpected(error.name, error.message)) return;
+				original(...args);
+			});
+		});
+		const loggerSpies = (["warning", "error"] as const).map((method) => {
+			const original = logger[method].bind(logger);
+			return spyOn(logger, method).mockImplementation((name, message, stack) => {
+				if (!isExpected(name, message)) original(name, message, stack);
+			});
+		});
+		try {
+			await run();
+		} finally {
+			for (const spy of [...consoleSpies, ...loggerSpies]) spy.mockRestore();
 		}
-	});
+	};
+}
+
+const { handler } = defineHandler({
+	services, schema,
+	onRequestReceive: () => ({ user: { isAdmin: false } }),
+	authorize({ service, path: [property] }) {
+		if (isPrivate(service, property)) throw new ServerError("Forbidden access");
+	},
 });
+const server = Bun.serve({
+	port: 0,
+	async fetch(request) { return await handler(request) ?? new Response("Not found", { status: 404 }); },
+});
+const { api } = defineApi<typeof services>({ apiPath: `http://localhost:${server.port}/api` });
+afterAll(() => server.stop(true));
 
-start("gravity/core", async ({ stage, same, test }) => {
-	await serverIsReady;
+test("RPC calls, input validation, guards, and tags work under Bun", withExpectedErrorLogs(async () => {
+	const same = (actual: unknown, expected: unknown, message: string) => expect(actual, message).toEqual(expected);
+	const truthy = (actual: unknown, message: string) => expect(actual, message).toBeTruthy();
 
-	stage(`Data fetching`);
 	{
 		same(await api.math.add(3, 4), { data: 7 }, `Fetch addition`);
 		same(await api.foo.bar(), { data: "bar" }, `Fetch string`);
@@ -35,11 +59,10 @@ start("gravity/core", async ({ stage, same, test }) => {
 		same(await api.foo.rawString(), { data: "rawString" }, `Fetch raw string`);
 		same(await api.foo.rawArray(), { data: [1, 2, 3] }, `Fetch raw array`);
 		same(await api.foo.rawArray[0](), { data: 1 }, `Fetch raw array element`);
-		test((await api.foo.rawDate()).data instanceof Date, `Fetch raw date`);
+		truthy((await api.foo.rawDate()).data instanceof Date, `Fetch raw date`);
 		same(await api.foo.nested.value(), { data: 12 }, `Fetch nested value`);
 	}
 
-	stage(`Parameters validation`);
 	{
 		same(
 			(await api.math.add(3, "4" as any)).error?.message,
@@ -58,7 +81,6 @@ start("gravity/core", async ({ stage, same, test }) => {
 		);
 	}
 
-	stage(`Guards`);
 	{
 		same(
 			(await api.foo.onlyForAdmins()).error?.message,
@@ -92,7 +114,6 @@ start("gravity/core", async ({ stage, same, test }) => {
 		);
 	}
 
-	stage(`Tags`);
 	{
 		same(
 			(await api.foo.onlyForPrivate()).error?.message,
@@ -126,5 +147,4 @@ start("gravity/core", async ({ stage, same, test }) => {
 		);
 	}
 
-	stopServer();
-});
+}));

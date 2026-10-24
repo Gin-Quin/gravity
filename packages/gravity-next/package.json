@@ -4,37 +4,41 @@
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",
-	"main": "./index.js",
+	"main": "./source/index.ts",
 	"exports": {
-		".": "./index.js",
-		"./*": "./*.js"
+		".": {
+			"types": "./source/index.ts",
+			"default": "./source/index.ts"
+		},
+		"./*": {
+			"types": "./source/*.ts",
+			"default": "./source/*.ts"
+		}
 	},
 	"scripts": {
-		"build": "esrun scripts/build",
-		"check": "tsc --noEmit",
-		"check:dev": "tsc --noEmit --watch",
-		"test": "esrun test",
-		"deploy": "pnpm build && pnpm test && pnpm publish"
+		"build": "bun ../../scripts/build.ts gravity-next"
 	},
 	"dependencies": {
-		"@digitak/gravity-react": "link:../gravity-react/package"
+		"@digitak/gravity-react": "workspace:*"
 	},
 	"peerDependencies": {
-		"@digitak/gravity": "link:../gravity/package",
+		"@digitak/gravity": "workspace:*",
 		"next": "12.1.5",
 		"react": "18.1.0",
 		"react-dom": "18.1.0"
 	},
 	"devDependencies": {
-		"@digitak/gravity": "link:../gravity/package",
-		"@types/node": "latest",
+		"@digitak/gravity": "workspace:*",
 		"@types/react": "18.0.8",
 		"@types/react-dom": "18.0.3",
 		"eslint": "8.14.0",
 		"eslint-config-next": "12.1.5",
 		"next": "12.1.5",
 		"react": "18.1.0",
-		"react-dom": "18.1.0",
-		"typescript": "latest"
+		"react-dom": "18.1.0"
+	},
+	"types": "./source/index.ts",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

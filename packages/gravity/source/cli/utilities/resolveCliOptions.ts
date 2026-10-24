@@ -16,7 +16,7 @@ export function resolveCliOptions(
 		schemaFile: "src/schema.json",
 		watch: false,
 		verbose: true,
-		esbuildOptions: {},
+		bunBuildOptions: {},
 		use: "",
 		bundleDependencies: false,
 		schemaless: false,

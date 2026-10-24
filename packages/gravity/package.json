@@ -7,46 +7,46 @@
 	"license": "GNU v3",
 	"type": "module",
 	"exports": {
-		".": "./index.js",
-		"./*": "./*.js"
+		".": {
+			"types": "./source/index.ts",
+			"default": "./source/index.ts"
+		},
+		"./*": {
+			"types": "./source/*.ts",
+			"default": "./source/*.ts"
+		}
 	},
-	"bin": "./cli/gravity.js",
+	"bin": "./source/cli/gravity.ts",
 	"scripts": {
-		"generate": "esrun scripts/generate",
-		"check": "tsc --noEmit",
-		"check:dev": "tsc --noEmit --watch",
-		"dev": "esrun --watch test",
-		"build": "esrun scripts/build",
-		"test": "esrun test",
-		"test:inspect": "esrun --inspect test",
-		"test:server": "npm run test:generate && esrun test/server",
-		"test:server:inspect": "npm run test:generate && esrun --inspect test/server",
-		"test:generate": "esrun source/cli/gravity generate schema",
-		"test:guard": "esrun test/guard",
-		"test:create": "esrun source/cli/gravity create",
-		"test:build": "esrun source/cli/gravity build --minify false",
-		"deploy": "pnpm build && pnpm test && pnpm publish"
+		"generate": "bun scripts/generate.ts",
+		"dev": "bun test --watch test/rpc.test.ts",
+		"build": "bun ../../scripts/build.ts gravity",
+		"test": "bun test test/rpc.test.ts",
+		"test:inspect": "bun test --inspect test/rpc.test.ts",
+		"test:server": "bun run test:generate && bun test/server/index.ts",
+		"test:server:inspect": "bun run test:generate && bun --inspect test/server/index.ts",
+		"test:generate": "bun source/cli/gravity.ts generate schema",
+		"test:guard": "bun test/guard.ts",
+		"test:create": "bun source/cli/gravity.ts create",
+		"test:build": "bun source/cli/gravity.ts build --minify false"
 	},
 	"dependencies": {
-		"@digitak/bunker": "^3.3.8",
-		"@digitak/esrun": "^3.2.11",
-		"@digitak/print": "^1.1.4",
-		"@ltd/j-toml": "^1.30.0",
-		"byte-base64": "^1.1.0",
-		"chalk": "^5.0.1",
-		"cli-select": "^1.1.2",
-		"esbuild": "^0.14.47",
-		"fs-extra": "^10.0.1",
-		"idb-keyval": "^6.1.0",
-		"node-fetch": "^3.2.3",
-		"sade": "^1.8.1",
+		"@digitak/bunker": "3.3.6",
+		"@digitak/print": "1.1.4",
+		"@ltd/j-toml": "1.30.0",
+		"byte-base64": "1.1.0",
+		"chalk": "5.0.1",
+		"cli-select": "1.1.2",
+		"fs-extra": "10.1.0",
+		"idb-keyval": "6.1.0",
+		"sade": "1.8.1",
 		"typezer": "0.9.30"
 	},
 	"devDependencies": {
-		"@types/fs-extra": "^9.0.13",
-		"@types/node": "latest",
-		"bun-types": "latest",
-		"fartest": "^2.1.8",
-		"typescript": "latest"
+		"@types/fs-extra": "9.0.13"
+	},
+	"types": "./source/index.ts",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

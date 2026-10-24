@@ -1,9 +1,12 @@
 {
-  "name": "vite-template-solid",
-  "scripts": {
-    "start": "../node_modules/.bin/vite",
-    "dev": "../node_modules/.bin/vite",
-    "build": "../node_modules/.bin/vite build",
-    "serve": "../node_modules/.bin/vite preview"
-  }
+	"name": "vite-template-solid",
+	"scripts": {
+		"start": "bunx --bun vite",
+		"dev": "bunx --bun vite",
+		"build": "bun check && bunx --bun vite build",
+		"serve": "bunx --bun vite preview"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
+	}
 }

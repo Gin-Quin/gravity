@@ -1,16 +1,11 @@
 {
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"moduleResolution": "node",
-		"target": "es2020",
-		"lib": ["es2020", "dom"],
-		"module": "esnext",
-		"strict": true,
-		"outDir": "package",
-		"declaration": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"experimentalDecorators": true,
-		"baseUrl": "."
+		"rootDir": "source",
+		"outDir": "package"
 	},
-	"include": ["./source/**/*.ts"]
+	"include": [
+		"source/**/*.ts"
+	],
+	"exclude": []
 }

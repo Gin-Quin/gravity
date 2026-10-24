@@ -1,30 +1,26 @@
 {
 	"version": "0.9.69",
 	"workspaces": [
-		"core",
-		"integrations/svelte",
-		"integrations/svelte-kit",
-		"integrations/react",
-		"integrations/solid",
-		"integrations/next",
-		"integrations/vue",
-		"integrations/nuxt",
-		"integrations/prisma"
+		"packages/*"
 	],
+	"private": true,
+	"packageManager": "bun@1.4.4",
 	"scripts": {
-		"init": "esrun scripts/initialize",
-		"build": "turbo run build",
-		"deploy": "esrun scripts/deploy"
+		"check": "bun check --no-script",
+		"test": "bun test scripts/test packages/gravity/test",
+		"build": "bun scripts/build.ts",
+		"deploy": "bun scripts/deploy.ts",
+		"test:release": "bun test scripts/test",
+		"test:cli": "bun test packages/gravity/test/cli.test.ts",
+		"test:rpc": "bun test packages/gravity/test/rpc.test.ts packages/gravity/test/serialization.test.ts"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^3.2.11",
-		"@digitak/print": "*",
-		"@types/async": "^3.2.12",
+		"@types/bun": "^1.4.4",
 		"@types/fs-extra": "^9.0.13",
-		"@types/js-yaml": "^4.0.5",
-		"async": "^3.2.3",
-		"fs-extra": "^10.0.0",
-		"js-yaml": "^4.1.0",
-		"turbo": "^1.2.6"
+		"typescript": "^5.9.3"
+	},
+	"name": "gravity-workspace",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

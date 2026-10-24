@@ -4,34 +4,37 @@
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",
-	"main": "./index.js",
+	"main": "./source/index.ts",
 	"exports": {
-		".": "./index.js",
-		"./*": "./*.js"
+		".": {
+			"types": "./source/index.ts",
+			"default": "./source/index.ts"
+		},
+		"./*": {
+			"types": "./source/*.ts",
+			"default": "./source/*.ts"
+		}
 	},
 	"scripts": {
-		"build": "esrun scripts/build",
-		"check": "tsc --noEmit",
-		"check:dev": "tsc --noEmit --watch",
-		"test": "esrun test",
-		"deploy": "pnpm build && pnpm test && pnpm publish"
+		"build": "bun ../../scripts/build.ts gravity-svelte"
 	},
 	"peerDependencies": {
-		"@digitak/gravity": "link:../gravity/package",
+		"@digitak/gravity": "workspace:*",
 		"svelte": "^3 || ^4"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "^3.2.11",
-		"@digitak/gravity": "link:../gravity/package",
-		"@sveltejs/vite-plugin-svelte": "latest",
-		"@tsconfig/svelte": "^2.0.1",
-		"@types/fs-extra": "^9.0.13",
-		"@types/node": "latest",
-		"svelte": "latest",
-		"svelte-check": "latest",
-		"svelte-preprocess": "latest",
-		"tslib": "latest",
-		"typescript": "latest",
-		"vite": "latest"
+		"@digitak/gravity": "workspace:*",
+		"@sveltejs/vite-plugin-svelte": "3.1.1",
+		"@tsconfig/svelte": "2.0.1",
+		"@types/fs-extra": "9.0.13",
+		"svelte": "4.2.18",
+		"svelte-check": "3.8.5",
+		"svelte-preprocess": "6.0.2",
+		"tslib": "2.6.3",
+		"vite": "5.4.1"
+	},
+	"types": "./source/index.ts",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

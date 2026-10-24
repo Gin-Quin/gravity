@@ -1,23 +1,26 @@
 {
-  "name": "project",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@digitak/gravity": "^0.0.43",
-    "@digitak/gravity-svelte": "^0.0.43"
-  },
-  "devDependencies": {
-    "svelte": "^3.47.0"
-  },
-  "test": "echo \"Error: no test specified\" && exit 1",
-  "dev": "gravity dev",
-  "build": "gravity build",
-  "scripts": {
-    "dev": "gravity dev",
-    "build": "gravity build"
-  }
+	"name": "project",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@digitak/gravity": "^0.0.43",
+		"@digitak/gravity-svelte": "^0.0.43"
+	},
+	"devDependencies": {
+		"svelte": "^3.47.0"
+	},
+	"test": "echo \"Error: no test specified\" && exit 1",
+	"dev": "gravity dev",
+	"build": "gravity build",
+	"scripts": {
+		"dev": "gravity dev",
+		"build": "bun check && gravity build"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
+	}
 }

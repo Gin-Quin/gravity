@@ -1,0 +1,51 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": [
+			"ES2022",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"module": "Preserve",
+		"moduleResolution": "Bundler",
+		"moduleDetection": "force",
+		"strict": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
+		"experimentalDecorators": true,
+		"types": [
+			"bun"
+		],
+		"paths": {
+			"@digitak/gravity": [
+				"./packages/gravity/source/index.ts"
+			],
+			"@digitak/gravity/*": [
+				"./packages/gravity/source/*"
+			],
+			"@digitak/gravity-react": [
+				"./packages/gravity-react/source/index.ts"
+			],
+			"@digitak/gravity-svelte": [
+				"./packages/gravity-svelte/source/index.ts"
+			],
+			"@digitak/gravity-vue": [
+				"./packages/gravity-vue/source/index.ts"
+			]
+		},
+		"resolvePackageJsonExports": false
+	},
+	"include": [
+		"scripts/**/*.ts",
+		"packages/*/source/**/*.ts",
+		"packages/gravity/scripts/**/*.ts",
+		"packages/gravity/test/*.test.ts"
+	],
+	"exclude": [
+		"**/package/**",
+		"**/node_modules/**"
+	]
+}

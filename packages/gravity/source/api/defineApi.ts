@@ -2,7 +2,8 @@ import type { Api, BeaconApi } from "./Api.js";
 import type { OnRequestSend } from "./OnRequestSend.js";
 import type { OnResponseReceive } from "./OnResponseReceive.js";
 import type { ApiResponse } from "./ApiResponse.js";
-import { bunker, debunker, debunkerMany } from "@digitak/bunker";
+import { bunker, debunker } from "@digitak/bunker";
+import { decodeStream } from "../utilities/decodeStream.js";
 import { apiProxy } from "./apiProxy.js";
 import { normalizePath } from "../utilities/normalizePath.js";
 import type { ServicesRecord } from "../services/ServicesRecord.js";
@@ -59,7 +60,7 @@ export function defineApi<Services extends ServicesRecord<any>>({
 		let request: RequestInit = {
 			method: "POST",
 			headers,
-			body,
+			body: body == null ? body : new Uint8Array(body),
 		};
 		request = (await onRequestSend?.({ request })) ?? request;
 
@@ -82,7 +83,7 @@ export function defineApi<Services extends ServicesRecord<any>>({
 				do {
 					const { done, value } = await reader.read();
 					if (done) return;
-					const results = debunkerMany(value);
+					const results = decodeStream(value);
 					for (const result of results) {
 						yield result;
 					}
@@ -110,7 +111,7 @@ export function defineApi<Services extends ServicesRecord<any>>({
 
 	const beacon = apiProxy<BeaconApi<Services>>(
 		(service, target, properties) => {
-			const data = properties?.length ? bunker(properties) : null;
+			const data = properties?.length ? new Uint8Array(bunker(properties)) : null;
 			if (typeof navigator == "undefined")
 				throw new Error(`Global variable navigator is undefined`);
 			if (typeof navigator.sendBeacon == "undefined")

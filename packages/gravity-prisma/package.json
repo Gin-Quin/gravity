@@ -4,39 +4,42 @@
 	"author": "Gin Quin",
 	"license": "GNU v3",
 	"type": "module",
-	"main": "./index.js",
+	"main": "./source/index.ts",
 	"exports": {
-		".": "./index.js",
-		"./*": "./*.js"
+		".": {
+			"types": "./source/index.ts",
+			"default": "./source/index.ts"
+		},
+		"./*": {
+			"types": "./source/*.ts",
+			"default": "./source/*.ts"
+		}
 	},
 	"scripts": {
-		"build": "esrun scripts/build",
-		"check": "tsc --noEmit",
-		"check:dev": "tsc --noEmit --watch",
-		"dev": "esrun --watch test",
-		"test": "esrun test",
-		"deploy": "pnpm build && pnpm test && pnpm publish",
+		"build": "bun ../../scripts/build.ts gravity-prisma",
+		"dev": "bun --watch test/index.ts",
+		"test": "bun test/index.ts",
 		"generate": "prisma generate"
 	},
 	"dependencies": {
-		"@digitak/gravity": "link:../gravity/package"
+		"@digitak/gravity": "workspace:*"
 	},
 	"peerDependencies": {
 		"@prisma/client": "^3",
 		"prisma": "^3"
 	},
 	"devDependencies": {
-		"@digitak/esrun": "*",
-		"@digitak/tsc-esm": "*",
-		"@prisma/client": "^3.8.1",
-		"@types/fs-extra": "^9.0.13",
-		"@types/node": "latest",
-		"dotenv": "^14.2.0",
-		"fs-extra": "^10.0.0",
-		"prisma": "^3.8.1",
-		"typescript": "latest"
+		"@prisma/client": "3.14.0",
+		"@types/fs-extra": "9.0.13",
+		"dotenv": "14.3.2",
+		"fs-extra": "10.1.0",
+		"prisma": "3.14.0"
 	},
 	"prisma": {
 		"schema": "test/prisma/schema.prisma"
+	},
+	"types": "./source/index.ts",
+	"engines": {
+		"bun": ">=1.4.4"
 	}
 }

@@ -6,7 +6,8 @@ export function findClosestFile(fileName: string): string | undefined {
 	while (true) {
 		const file = join(directory, fileName);
 		if (existsSync(file)) return file;
-		if (directory == "") return undefined;
-		directory = resolve(directory, "..");
+		const parent = resolve(directory, "..");
+		if (parent === directory) return undefined;
+		directory = parent;
 	}
 }

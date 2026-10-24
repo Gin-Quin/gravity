@@ -3,5 +3,4 @@ node_modules/
 !**/package/README.md
 .env
 .DS_STORE
-.turbo
 dist/

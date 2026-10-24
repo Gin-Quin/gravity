@@ -32,80 +32,19 @@ export const options = defineOptions({
 	],
 });
 
-export const esBuildOptionsProperties: Array<{
+export const bunBuildOptionsProperties: Array<{
 	option: string;
 	key: string;
 	description: string;
-	getValue?: (value: string) => any;
+	getValue?: (value: string) => unknown;
 }> = [
-	{
-		option: "--minify",
-		key: "minify",
-		description: "Minify the output",
-		getValue: (value: string) => (value ? JSON.parse(value) : true),
-	},
-	{
-		option: "--format",
-		key: "format",
-		description: "iife | cjs | esm",
-	},
-	{
-		option: "--sourcemap",
-		key: "sourcemap",
-		description: "linked | external | inline | both",
-	},
-	{
-		option: "--platform",
-		key: "platform",
-		description: "node | neutral",
-	},
-	{
-		option: "--target",
-		key: "target",
-		description: "A list of target environment for the generated Javascript",
-	},
-	{
-		option: "--jsx",
-		key: "jsx",
-		description: "Preserve JSX instead of transofrming it",
-	},
-	{
-		option: "--jsx-factory",
-		key: "jsxFactory",
-		description: "Specify wich function to use to transform JSX",
-	},
-	{
-		option: "--jsx-fragment",
-		key: "jsxFragment",
-		description: "Specify wich function to use to transform JSX fragments",
-	},
-	{
-		option: "--keep-names",
-		key: "keepNames",
-		description: "Specify whether to keep names of functions and classes",
-		getValue: (value: string) => (value ? JSON.parse(value) : true),
-	},
-	{
-		option: "--legal-comments",
-		key: "legalComments",
-		description: "none | inline | eof | linked | external",
-	},
-	{
-		option: "--tree-shaking",
-		key: "treeShaking",
-		description: "true | false",
-		getValue: (value: string) => (value ? JSON.parse(value) : true),
-	},
-	{
-		option: "--tsconfig",
-		key: "tsconfig",
-		description: "Path to a tsconfig.json file",
-	},
+	{ option: "--minify", key: "minify", description: "Minify the output", getValue: (value) => value ? JSON.parse(value) : true },
+	{ option: "--format", key: "format", description: "esm | cjs | iife" },
+	{ option: "--sourcemap", key: "sourcemap", description: "none | linked | inline | external" },
+	{ option: "--target", key: "target", description: "bun | browser" },
 ];
 
-export const useEsBuildOptions = (program: Sade): Sade => {
-	for (const { option, description } of esBuildOptionsProperties) {
-		program.option(option, description);
-	}
+export const useBunBuildOptions = (program: Sade): Sade => {
+	for (const { option, description } of bunBuildOptionsProperties) program.option(option, description);
 	return program;
 };

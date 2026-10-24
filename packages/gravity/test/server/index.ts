@@ -1,6 +1,5 @@
-import { defineHandler } from "../../source/node";
+import { defineHandler } from "../../source/bun";
 import { services } from "./services";
-import { createServer } from "http";
 import { print } from "@digitak/print";
 import schema from "./schema.json";
 import { isPrivate } from "./guards/Private";
@@ -43,7 +42,9 @@ const { handler } = defineHandler({
 	},
 });
 
-const server = createServer(handler);
-server.listen(PORT);
+const server = Bun.serve({
+	port: PORT,
+	async fetch(request) { return await handler(request) ?? new Response("Not found", { status: 404 }); },
+});
 
 print(`\n✨ [bold.magenta:Gravity server is running on port ${PORT}] ✨`);

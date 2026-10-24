@@ -1,10 +1,13 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "../node_modules/.bin/gravity dev --use '../node_modules/.bin/nuxt build'",
-    "dev": "../node_modules/.bin/gravity dev --use '../node_modules/.bin/nuxt dev'",
-    "generate:schema": "../node_modules/.bin/gravity generate schema",
-    "generate": "../node_modules/.bin/nuxt generate",
-    "preview": "../node_modules/.bin/nuxt preview"
-  }
+	"private": true,
+	"scripts": {
+		"build": "bun check && bunx --bun gravity dev --use 'bunx --bun nuxt build'",
+		"dev": "bunx --bun gravity dev --use 'bunx --bun nuxt dev'",
+		"generate:schema": "bunx --bun gravity generate schema",
+		"generate": "bunx --bun nuxt generate",
+		"preview": "bunx --bun nuxt preview"
+	},
+	"engines": {
+		"bun": ">=1.4.4"
+	}
 }
