@@ -2,6 +2,9 @@ import { expect, test } from "bun:test";
 import { isPublished, publishPackages, validatePackage } from "../jobs/deploy.ts";
 import { orderPackages, type WorkspacePackage } from "../workspace.ts";
 import { releaseManifest } from "../build.ts";
+import { mkdirSync, mkdtempSync, rmSync } from "fs";
+import { tmpdir } from "os";
+import { resolve } from "path";
 
 const version = "0.9.69";
 const pkg = (name: string, dependencies: Record<string, string> = {}): WorkspacePackage => ({
@@ -81,4 +84,45 @@ test("reports a successful command without a visible published version as a fail
 	await expect(publishPackages([pkg("gravity")], version, {
 		isPublished: async () => false, publish: () => {},
 	})).rejects.toThrow("Could not verify");
+});
+
+test("release validation packs locally without credentials or registry requests", async () => {
+	const directory = mkdtempSync(resolve(tmpdir(), "gravity-pack-test-"));
+	let requests = 0;
+	const registry = Bun.serve({
+		port: 0,
+		fetch() {
+			requests++;
+			return new Response("Authentication required", { status: 401 });
+		},
+	});
+	try {
+		const builtDirectory = resolve(directory, "package");
+		mkdirSync(builtDirectory);
+		const manifest = { name: "gravity-pack-fixture", version, main: "./index.js", types: "./index.d.ts" };
+		await Bun.write(resolve(builtDirectory, "package.json"), JSON.stringify(manifest));
+		await Bun.write(resolve(builtDirectory, "index.js"), "export const value = 1;\n");
+		await Bun.write(resolve(builtDirectory, "index.d.ts"), "export declare const value = 1;\n");
+		await Bun.write(resolve(builtDirectory, "bunfig.toml"), `[install]\nregistry = { url = "${registry.url}", token = "" }\n`);
+		const module = resolve(import.meta.dir, "../jobs/deploy.ts");
+		const source = `import { validateReleasePackage } from ${JSON.stringify(module)};
+await validateReleasePackage(${JSON.stringify({ directory, manifest })}, ${JSON.stringify(version)});`;
+		const child = Bun.spawn([process.execPath, "-e", source], {
+			cwd: directory,
+			env: { PATH: process.env.PATH ?? "", CI: "true" },
+			stdout: "pipe",
+			stderr: "pipe",
+		});
+		const [exitCode, stdout, stderr] = await Promise.all([
+			child.exited,
+			new Response(child.stdout).text(),
+			new Response(child.stderr).text(),
+		]);
+		expect(exitCode, stdout + stderr).toBe(0);
+		expect(stdout).toContain(`Validated ${manifest.name}@${version}.`);
+		expect(requests).toBe(0);
+	} finally {
+		registry.stop(true);
+		rmSync(directory, { recursive: true, force: true });
+	}
 });

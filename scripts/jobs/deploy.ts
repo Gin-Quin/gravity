@@ -46,6 +46,25 @@ export async function publishPackages(packages: WorkspacePackage[], version: str
 	}
 }
 
+export async function validateReleasePackage({ directory, manifest: source }: WorkspacePackage, version: string): Promise<WorkspacePackage> {
+	const builtDirectory = resolve(directory, "package");
+	const manifest: Manifest = await Bun.file(resolve(builtDirectory, "package.json")).json();
+	validatePackage(manifest, source, version);
+	const binaries = typeof manifest.bin === "string" ? [manifest.bin] : Object.values(manifest.bin ?? {});
+	for (const file of [manifest.main, manifest.types, ...binaries].filter((file): file is string => !!file)) {
+		if (!existsSync(resolve(builtDirectory, file))) throw new Error(`${manifest.name}: package is missing ${file}.`);
+	}
+	for (const binary of binaries) {
+		if (!(await Bun.file(resolve(builtDirectory, binary)).text()).startsWith("#!/usr/bin/env bun\n")) {
+			throw new Error(`${manifest.name}: executable ${binary} must use Bun.`);
+		}
+	}
+	if (!binaries.length && !existsSync(resolve(builtDirectory, "index.js"))) throw new Error(`${manifest.name}: package is missing index.js.`);
+	runBun(["pm", "pack", "--dry-run"], builtDirectory, true);
+	console.log(`Validated ${manifest.name}@${version}.`);
+	return { directory: builtDirectory, manifest };
+}
+
 export async function deploy(args: string[]) {
 	const allowed = new Set(["--dry-run", "--bump", "--help"]);
 	for (const arg of args) if (!allowed.has(arg)) throw new Error(`Unknown argument: ${arg}. Use bun run deploy --help.`);
@@ -85,24 +104,7 @@ are managed separately.`);
 	}
 	runBun(["run", "build"]);
 	const builtPackages: WorkspacePackage[] = [];
-	for (const { directory, manifest: source } of packages) {
-		const builtDirectory = resolve(directory, "package");
-		const manifest: Manifest = await Bun.file(resolve(builtDirectory, "package.json")).json();
-		validatePackage(manifest, source, version);
-		const binaries = typeof manifest.bin === "string" ? [manifest.bin] : Object.values(manifest.bin ?? {});
-		for (const file of [manifest.main, manifest.types, ...binaries].filter((file): file is string => !!file)) {
-			if (!existsSync(resolve(builtDirectory, file))) throw new Error(`${manifest.name}: package is missing ${file}.`);
-		}
-		for (const binary of binaries) {
-			if (!(await Bun.file(resolve(builtDirectory, binary)).text()).startsWith("#!/usr/bin/env bun\n")) {
-				throw new Error(`${manifest.name}: executable ${binary} must use Bun.`);
-			}
-		}
-		if (!binaries.length && !existsSync(resolve(builtDirectory, "index.js"))) throw new Error(`${manifest.name}: package is missing index.js.`);
-		runBun(["publish", "--dry-run", "--access", "public"], builtDirectory, true);
-		console.log(`Validated ${manifest.name}@${version}.`);
-		builtPackages.push({ directory: builtDirectory, manifest });
-	}
+	for (const pkg of packages) builtPackages.push(await validateReleasePackage(pkg, version));
 	if (dryRun) {
 		console.log(`\nDry run successful: all ${builtPackages.length} packages are ready for ${version}. Nothing was published.`);
 		return;

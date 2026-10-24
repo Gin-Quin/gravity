@@ -33,6 +33,9 @@ Check every package without credentials or publishing:
 bun run deploy --dry-run
 ```
 
+The dry run uses `bun pm pack --dry-run` to validate packages locally. It does
+not require registry login or a publish token, including in CI.
+
 To publish the current version, set `GRAVITY_REGISTRY_TOKEN` to a valid granular
 registry token with write access to the `@digitak` packages. The token is read from
 the environment by `bunfig.toml`; never commit its value. Configure its 2FA settings
